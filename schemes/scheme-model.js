@@ -6,7 +6,8 @@ module.exports = {
   findSteps,
   add,
   update,
-  remove
+  remove,
+  addStep
 };
 
 function find() {
@@ -66,4 +67,13 @@ function remove(id) {
   return db("schemes")
     .where({ id })
     .del();
+}
+
+function addStep(stepData, schemeId) {
+  // INSERT INTO steps (step_number, instructions, scheme_id) VALUES ("2", "Adopt all the dogs", "8")
+  return db("steps")
+    .insert({ ...stepData, scheme_id: schemeId })
+    .then(response => {
+      return findSteps(schemeId);
+    });
 }

@@ -21,6 +21,24 @@ function validSchemePost(req, res, next) {
   }
 }
 
+function validStepPost(req, res, next) {
+  if (Object.keys(req.body).length === 0) {
+    res.status(400).json({ error: "No step data passed to add the step." });
+  } else {
+    if (!req.body.step_number) {
+      res.status(400).json({
+        error: "You are missing the required property: 'step_number'."
+      });
+    } else if (!req.body.instructions) {
+      res.status(400).json({
+        error: "You are missing the required property: 'instructions'."
+      });
+    } else {
+      next();
+    }
+  }
+}
+
 router.get("/", (req, res) => {
   Schemes.find()
     .then(schemes => {
@@ -79,7 +97,7 @@ router.post("/", (req, res) => {
     });
 });
 
-router.post("/:id/steps", (req, res) => {
+router.post("/:id/steps", validStepPost, (req, res) => {
   const stepData = req.body;
   const { id } = req.params;
 
