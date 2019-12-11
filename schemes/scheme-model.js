@@ -3,7 +3,10 @@ const db = require("../data/db-config");
 module.exports = {
   find,
   findById,
-  findSteps
+  findSteps,
+  add,
+  update,
+  remove
 };
 
 function find() {
@@ -37,4 +40,30 @@ function findSteps(id) {
     .join("schemes", "steps.scheme_id", "schemes.id")
     .where({ scheme_id: id })
     .orderBy("step_number");
+}
+
+function add(schemeData) {
+  // Submits an insert to the database table schemes, and since the DB is set to
+  // return an array of ids, we want to grab the first index of that id,
+  // and return it by using the findById() callback function
+  return db("schemes")
+    .insert(schemeData, "id")
+    .then(ids => {
+      const [id] = ids;
+
+      // The call back function to print the results of the newly created scheme back to the user
+      return findById(id);
+    });
+}
+
+function update(changes, id) {
+  return db("schemes")
+    .where({ id })
+    .update(changes, "*");
+}
+
+function remove(id) {
+  return db("schemes")
+    .where({ id })
+    .del();
 }

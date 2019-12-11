@@ -5,6 +5,22 @@ const Schemes = require("./scheme-model.js");
 
 const router = express.Router();
 
+function validSchemePost(req, res, next) {
+  if (Object.keys(req.body).length === 0) {
+    res
+      .status(400)
+      .json({ error: "No scheme data passed to update the scheme." });
+  } else {
+    if (!req.body.scheme_name) {
+      res
+        .status(400)
+        .json({ error: "You are missing required property: 'scheme_name'." });
+    } else {
+      next();
+    }
+  }
+}
+
 router.get("/", (req, res) => {
   Schemes.find()
     .then(schemes => {
@@ -84,7 +100,7 @@ router.post("/:id/steps", (req, res) => {
     });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", validSchemePost, (req, res) => {
   const { id } = req.params;
   const changes = req.body;
 
